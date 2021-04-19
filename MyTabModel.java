@@ -32,34 +32,32 @@ public class MyTabModel extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        switch (columnIndex) {
-            case 0:
-            case 1:
-                return String.class;
-            case 2:
-                return Enum.class;
-            case 3:
-                return int.class;
-            default:
-                return double.class;
-        }
+            switch (columnIndex) {
+                case 0:
+                case 1:
+                    return String.class;
+                case 2:
+                    return Enum.class;
+                case 3:
+                    return int.class;
+                default:
+                    return double.class;
+            }
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        for (Employee e : employees) {
             switch (columnIndex) {
                 case 0:
-                    return e.getName();
+                    return employees.get(rowIndex).getName();
                 case 1:
-                    return e.getSurname();
+                    return employees.get(rowIndex).getSurname();
                 case 2:
-                    return e.getPosition();
+                    return employees.get(rowIndex).getPosition();
                 case 3:
-                    return e.getTimeOfService();
+                    return employees.get(rowIndex).getTimeOfService();
                 case 4:
-                    return e.getSalary();
-            }
+                    return employees.get(rowIndex).getSalary();
         }
         return -1;
     }
@@ -84,4 +82,15 @@ public class MyTabModel extends AbstractTableModel {
                 break;
         }
     }
+
+    @Override
+    public void fireTableCellUpdated(int row, int column) {
+        super.fireTableCellUpdated(row, column);
+    }
+
+    @Override
+    public void fireTableRowsInserted(int firstRow, int lastRow) {
+        super.fireTableRowsInserted(firstRow, lastRow);
+    }
+
 }
