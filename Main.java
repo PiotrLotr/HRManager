@@ -51,12 +51,12 @@ public class Main {
 // menu panel buttons
         Button addNewEmployeeButton = new Button("Add New Employee");
         tablePanel.add(addNewEmployeeButton);
+
         ActionListener actionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(e.getSource() == addNewEmployeeButton){
-                    employees.add(new Employee("Piotr", "Wrona", Position.CHIEF, 5, 2000));
-                    JOptionPane.showMessageDialog(null, "Operation was sucesfully");
+                   AddingEmployeeFrame addingEmployeeFrame = new AddingEmployeeFrame();
                 }
             }
         };
