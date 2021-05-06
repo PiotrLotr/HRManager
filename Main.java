@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 public class Main {
@@ -17,7 +16,8 @@ public class Main {
     }
 
     private static void createAndShowGUI() {
-// main frame spec
+
+//  main frame spec
         JFrame mainFrame = new JFrame();
         Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
         mainFrame.setTitle("HRManager");
@@ -26,11 +26,11 @@ public class Main {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
 
-//     table panel
+
+//  table panel
         JPanel tablePanel = new JPanel();
         mainFrame.setContentPane(tablePanel);
 
-// table implementation
         // table input
         ArrayList<Employee> employees = new ArrayList<>();
         Employee employee1 = new Employee("Zbigniew", "Stonoga", Position.APPRENTICE, 2, 2000);
@@ -38,36 +38,59 @@ public class Main {
         employees.add(employee1);
         employees.add(employee2);
 
-//        table spec
         MyTabModel myTabModel = new MyTabModel(employees);
         JTable table = new JTable(myTabModel);
-        tablePanel.add(table);
 
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
         tablePanel.add(scrollPane);
 
 
-// menu panel buttons
+
+//  menu panel buttons
         Button addNewEmployeeButton = new Button("Add New Employee");
         tablePanel.add(addNewEmployeeButton);
 
-        ActionListener actionListener = new ActionListener() {
+
+        ActionListener actionListener1 = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(e.getSource() == addNewEmployeeButton){
-                   AddingEmployeeFrame addingEmployeeFrame = new AddingEmployeeFrame();
+                if (e.getSource() == addNewEmployeeButton) {
+                    new AddingEmployeeFrame(employees);
+                    myTabModel.fireTableDataChanged();
                 }
             }
         };
-        addNewEmployeeButton.addActionListener(actionListener);
+        addNewEmployeeButton.addActionListener(actionListener1);
+
+//  editing employee
+        Button editEmployeeData = new Button("Edit Employee Data");
+
+        editEmployeeData.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = table.getSelectedRow();
+                new EditEmployeeFrame(employees.get(index), employees, index);
+                myTabModel.fireTableDataChanged();
+            }
+        });
+
+        mainFrame.add(editEmployeeData);
+
+//  deleting employee
+        Button deleteEmployeeButton = new Button ("Delete Employee");
+        tablePanel.add(deleteEmployeeButton);
+        ActionListener actionListener2 = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        };
 
 
-//         addNewEmployeeButton.addActionListener(this);
 
-        tablePanel.add(new Button("Edit Employee data"));
-        tablePanel.add(new Button("Delete Employee"));
 
 
     }
+
 }

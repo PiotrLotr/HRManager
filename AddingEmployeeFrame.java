@@ -2,10 +2,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class AddingEmployeeFrame extends JFrame {
 
-    public AddingEmployeeFrame() throws HeadlessException {
+    public AddingEmployeeFrame(ArrayList <Employee> employees) throws HeadlessException {
         Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setTitle("Adding new employee...");
         this.setSize(screenDim.width / 3, screenDim.height / 3);
@@ -32,15 +33,14 @@ public class AddingEmployeeFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    new Employee(
+                    employees.add(new Employee(
                             insertName.getText(),
                             insertSurname.getText(),
                             (Position.valueOf(insertPosition.getText())),
                             Integer.parseInt(insertYearsOfExperience.getText()),
-                            Integer.parseInt(insertSalary.getText()));
+                            Integer.parseInt(insertSalary.getText())));
                 } catch (WrongDataTypeException err) {
                     System.out.println("Wrong data type. Please try again...");
-                    new AddingEmployeeFrame();
                 }
                 JOptionPane.showMessageDialog(null, "New employer added");
             }

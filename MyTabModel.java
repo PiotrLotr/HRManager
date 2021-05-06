@@ -1,3 +1,4 @@
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
@@ -10,6 +11,7 @@ public class MyTabModel extends AbstractTableModel {
             "SALARY[PLN]"};
 
     private ArrayList<Employee> employees;
+    private Employee selectedEmployee;
 
     public MyTabModel(ArrayList<Employee> employees) {
         this.employees = employees;
@@ -83,14 +85,9 @@ public class MyTabModel extends AbstractTableModel {
         }
     }
 
-    @Override
-    public void fireTableCellUpdated(int row, int column) {
-        super.fireTableCellUpdated(row, column);
-    }
 
     @Override
-    public void fireTableRowsInserted(int firstRow, int lastRow) {
-        super.fireTableRowsInserted(firstRow, lastRow);
+    public void fireTableChanged(TableModelEvent e) {
+        super.fireTableChanged(e);
     }
-
 }
