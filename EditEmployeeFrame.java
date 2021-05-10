@@ -2,11 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class EditEmployeeFrame extends JFrame {
 
-    public EditEmployeeFrame(Employee selectedValue, ArrayList<Employee> employees, int index) throws HeadlessException {
+    public EditEmployeeFrame(MyTabModel tabel, int index) throws HeadlessException {
         Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setTitle("Editing employee...");
         this.setSize(screenDim.width / 3, screenDim.height / 3);
@@ -17,11 +16,13 @@ public class EditEmployeeFrame extends JFrame {
         this.add(jPanel);
         jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.PAGE_AXIS));
 
-            JTextField insertName = new JTextField(selectedValue.getName());
-            JTextField insertSurname = new JTextField(selectedValue.getSurname());
-            JTextField insertPosition = new JTextField(String.valueOf(selectedValue.getPosition()));
-            JTextField insertYearsOfExperience = new JTextField(String.valueOf(selectedValue.getTimeOfService()));
-            JTextField insertSalary = new JTextField(String.valueOf(selectedValue.getSalary()));
+            var selectedEmployee= tabel.getEmployees().get(index);
+
+            JTextField insertName = new JTextField(selectedEmployee.getName());
+            JTextField insertSurname = new JTextField(selectedEmployee.getSurname());
+            JTextField insertPosition = new JTextField(String.valueOf(selectedEmployee.getPosition()));
+            JTextField insertYearsOfExperience = new JTextField(String.valueOf(selectedEmployee.getTimeOfService()));
+            JTextField insertSalary = new JTextField(String.valueOf(selectedEmployee.getSalary()));
 
         jPanel.add(insertName);
         jPanel.add(insertSurname);
@@ -35,17 +36,19 @@ public class EditEmployeeFrame extends JFrame {
         acceptChangesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectedValue.setName(insertName.getText());
-                selectedValue.setSurname(insertSurname.getText());
-                selectedValue.setPosition(Position.valueOf(insertPosition.getText()));
-                selectedValue.setTimeOfService(Integer.valueOf(insertYearsOfExperience.getText()));
-                selectedValue.setSalary(Integer.valueOf(insertSalary.getText()));
+                selectedEmployee.setName(insertName.getText());
+                selectedEmployee.setSurname(insertSurname.getText());
+                selectedEmployee.setPosition(Position.valueOf(insertPosition.getText()));
+                selectedEmployee.setTimeOfService(Integer.valueOf(insertYearsOfExperience.getText()));
+                selectedEmployee.setSalary(Integer.valueOf(insertSalary.getText()));
+
             }
         });
 
         jPanel.add(acceptChangesButton);
 
         JButton deleteEmployee = new JButton ("DELETE");
+
         deleteEmployee.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,7 +58,7 @@ public class EditEmployeeFrame extends JFrame {
                         "Confirm",
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (response == JOptionPane.YES_OPTION){
-                    employees.remove(index);
+                    tabel.getEmployees().remove(index);
                 }
             }
         });

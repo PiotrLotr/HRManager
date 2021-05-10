@@ -2,11 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class AddingEmployeeFrame extends JFrame {
 
-    public AddingEmployeeFrame(ArrayList <Employee> employees) throws HeadlessException {
+    public AddingEmployeeFrame(MyTabModel table) throws HeadlessException {
         Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setTitle("Adding new employee...");
         this.setSize(screenDim.width / 3, screenDim.height / 3);
@@ -17,28 +16,32 @@ public class AddingEmployeeFrame extends JFrame {
         this.add(jPanel);
         jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.PAGE_AXIS));
 
-        JTextField insertName = new JTextField("Please insert name");
-        JTextField insertSurname = new JTextField("Please insert surname");
-        JTextField insertPosition = new JTextField("Please insert position");
-        JTextField insertYearsOfExperience = new JTextField("Please insert years of experience");
-        JTextField insertSalary = new JTextField("Please insert salary");
-
+        JTextField insertName = new JTextField("Name");
+        JTextField insertSurname = new JTextField("Surname");
+        JTextField insertPosition = new JTextField("Position");
+        JTextField insertYearsOfExperience = new JTextField("Years of experience");
+        JTextField insertSalary = new JTextField("Salary");
         jPanel.add(insertName);
         jPanel.add(insertSurname);
+
         jPanel.add(insertPosition);
         jPanel.add(insertYearsOfExperience);
         jPanel.add(insertSalary);
+
+//        ComboBox<Position> comboBox = new ComboBox<>();
+//        comboBox.setItems
 
         ActionListener actionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    employees.add(new Employee(
+                    table.getEmployees().add(new Employee(
                             insertName.getText(),
                             insertSurname.getText(),
                             (Position.valueOf(insertPosition.getText())),
                             Integer.parseInt(insertYearsOfExperience.getText()),
                             Integer.parseInt(insertSalary.getText())));
+                    table.fireTableStructureChanged();
                 } catch (WrongDataTypeException err) {
                     System.out.println("Wrong data type. Please try again...");
                 }
