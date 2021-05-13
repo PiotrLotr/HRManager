@@ -1,15 +1,14 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.ImageFilter;
 import java.io.*;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static javax.swing.BoxLayout.Y_AXIS;
 
 public class Main {
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -18,6 +17,19 @@ public class Main {
             }
         });
     }
+//    public static void main(String[] args) {
+//        try {
+//            File myObj = new File("C://Users/pwron/Desktop/filename.txt");
+//            if (myObj.createNewFile()) {
+//                System.out.println("File created: " + myObj.getName());
+//            } else {
+//                System.out.println("File already exists.");
+//            }
+//        } catch (IOException e) {
+//            System.out.println("An error occurred.");
+//            e.printStackTrace();
+//        }
+//    }
 
     private static void createAndShowGUI() {
 
@@ -84,7 +96,6 @@ public class Main {
         table.setAutoCreateRowSorter(true);
 
 //  exporting/ importing
-
         JButton exportButton = new JButton("EXPORT");
 
         JMenuBar menuBar;
@@ -99,51 +110,54 @@ public class Main {
                 "This menu does nothing");
         menuBar.add(menu);
 
-        JMenuItem menuItem1 = new JMenuItem("Export data");
+        JMenuItem menuItem1 = new JMenuItem("Save to file");
         menu.add(menuItem1);
 
-        JMenuItem menuItem2 = new JMenuItem("Import data");
+        JMenuItem menuItem2 = new JMenuItem("Import");
         menu.add(menuItem2);
 
         menuItem1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                File file;
-                int response;
-                JFileChooser jFileChooser = new JFileChooser(".");
+                JFileChooser fc = new JFileChooser();
 
-                jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                response = jFileChooser.showOpenDialog(null);
+                JFrame parentFrame = new JFrame();
+                fc.setDialogTitle("Specify file to save");
+                int userSelection = fc.showSaveDialog(parentFrame);
 
-                if(response == JFileChooser.APPROVE_OPTION) {
-                    file = jFileChooser.getSelectedFile();
-                    if (file.isFile()) {
-                        try {
-                            FileWriter fw = new FileWriter(file);
-                            for (Employee emp : myTabModel.getEmployees()) {
-                                fw.write(emp.toString() + "\n");
-                            }
-                            fw.close();
-                        } catch (IOException exc) {
-                            System.out.println("An error occurred.");
-                            exc.printStackTrace();
+
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        File fileToCreate = new File( fc.getCurrentDirectory()+"/"+fc.getSelectedFile().getName()+".txt");
+                        var gfh = fileToCreate.createNewFile();
+
+                        FileWriter fw = new FileWriter(fileToCreate);
+                        for (Employee emp: myTabModel.getEmployees()){
+                            fw.write(emp.toString()+"\n");
                         }
+                        fw.close();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
                     }
                 }
             }
-        });
+        }
+        );
 
-        menuItem2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                File file;
-                Scanner scanner;
-                int response;
-                JFileChooser jFileChooser = new JFileChooser(".");
+        menuItem2.addActionListener(new
 
-                jFileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                response = jFileChooser.showOpenDialog(null);
+    ActionListener() {
+        @Override
+        public void actionPerformed (ActionEvent e){
+            File file;
+            Scanner scanner;
+            int response;
+            JFileChooser fc = new JFileChooser(".");
 
+            fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            response = fc.showOpenDialog(null);
+        }
+    });
 //                if(response == JFileChooser.APPROVE_OPTION) {
 //                    file = jFileChooser.getSelectedFile();
 //                    if (file.isFile()) {
@@ -165,17 +179,19 @@ public class Main {
 //        });
 
 
+    //  layout
+    Container container = mainFrame.getContentPane();
+        container.setLayout(new
 
-//  layout
-        Container container = mainFrame.getContentPane();
-        container.setLayout(new BoxLayout(container ,Y_AXIS));
+    BoxLayout(container, Y_AXIS));
 
         container.add(addNewEmployeeButton);
         container.add(editEmployeeData);
         container.add(deleteEmployeeButton);
 
+}
+}
 
-    }
 
 //                try {
 //        FileWriter fw = new FileWriter(fileLocation);
@@ -188,6 +204,15 @@ public class Main {
 //        exc.printStackTrace();
 //    }
 
-}
+//                        try {
+//                            FileWriter fw = new FileWriter(file);
+//                            for (Employee emp : myTabModel.getEmployees()) {
+//                                fw.write(emp.toString() + "\n");
+//                            }
+//                            fw.close();
+//                        } catch (IOException exc) {
+//                            System.out.println("An error occurred.");
+//                        }
+
 
 
