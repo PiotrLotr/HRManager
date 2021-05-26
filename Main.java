@@ -1,35 +1,14 @@
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.ImageFilter;
-import java.io.*;
-import java.util.Scanner;
-
-import static javax.swing.BoxLayout.Y_AXIS;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                createAndShowGUI();
-            }
-        });
+        SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
-//    public static void main(String[] args) {
-//        try {
-//            File myObj = new File("C://Users/pwron/Desktop/filename.txt");
-//            if (myObj.createNewFile()) {
-//                System.out.println("File created: " + myObj.getName());
-//            } else {
-//                System.out.println("File already exists.");
-//            }
-//        } catch (IOException e) {
-//            System.out.println("An error occurred.");
-//            e.printStackTrace();
-//        }
-//    }
 
     private static void createAndShowGUI() {
 
@@ -37,67 +16,96 @@ public class Main {
         JFrame mainFrame = new JFrame();
         Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
         mainFrame.setTitle("HRManager");
-        mainFrame.setSize(screenDim.width / 2, screenDim.height / 2);
+        mainFrame.setSize(640, 700);
         mainFrame.setLocation(screenDim.width / 2, screenDim.height / 4);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
+        mainFrame.setResizable(false);
+
 
 //  table panel
         JPanel tablePanel = new JPanel();
-        mainFrame.setContentPane(tablePanel);
+        tablePanel.setLayout(new GridBagLayout());
 
-        // table input
         MyTabModel myTabModel = new MyTabModel();
 
-        Employee employee1 = new Employee("Zbigniew", "Stonoga", Position.APPRENTICE, 2, 2000);
-        Employee employee2 = new Employee("Bogdan", "Boner", Position.MANAGER, 5, 10000);
-        myTabModel.getEmployees().add(employee1);
-        myTabModel.getEmployees().add(employee2);
-
         JTable table = new JTable(myTabModel);
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        mainFrame.add(tablePanel);
+
+// table input
+        myTabModel.getEmployees().add(new Employee("Igor", "Sikora", Position.APPRENTICE, 0.5, 2500));
+        myTabModel.getEmployees().add(new Employee("Bogdan", "Boner", Position.CHIEF, 15.5, 12000));
+        myTabModel.getEmployees().add(new Employee("Jakub", "Brzezinski", Position.DESIGNER, 2, 4200));
+        myTabModel.getEmployees().add(new Employee("Kornelia", "Kozlowska", Position.SALESMAN, 5, 7800));
+        myTabModel.getEmployees().add(new Employee("Faustyna", "Michalak", Position.APPRENTICE, 1.2, 3000));
+        myTabModel.getEmployees().add(new Employee("Julian", "Malinowski", Position.MANAGER, 8.8, 8450));
+        myTabModel.getEmployees().add(new Employee("Kevin", "Kubiak", Position.SALESMAN, 4.7, 6640));
+        myTabModel.getEmployees().add(new Employee("Joanna", "Mazurek", Position.DESIGNER, 5, 5500));
+        myTabModel.getEmployees().add(new Employee("Judyta", "Kowalczyk", Position.MANAGER, 10, 9760));
+        myTabModel.getEmployees().add(new Employee("Alfred", "Jakubowski", Position.APPRENTICE, 1.5, 3340));
+        myTabModel.getEmployees().add(new Employee("Gniewomir", "Jakubowski", Position.DESIGNER, 4.1, 5900));
+        myTabModel.getEmployees().add(new Employee("Martin", "Szymczak", Position.DESIGNER, 3.6, 5490));
+        myTabModel.getEmployees().add(new Employee("Marlena", "Gorecka", Position.SALESMAN, 7.6, 6824));
+        myTabModel.getEmployees().add(new Employee("Amalia", "Jasinska", Position.MANAGER, 6.8, 8520 ));
+        myTabModel.getEmployees().add(new Employee("Rafal", "Cieslak", Position.DESIGNER, 5.1, 5715));
+        myTabModel.getEmployees().add(new Employee("Bianka", "Krajewska", Position.APPRENTICE, 4, 3950));
+        myTabModel.getEmployees().add(new Employee("Eryk", "Ziolkowski", Position.SALESMAN, 7.1, 7430));
+        myTabModel.getEmployees().add(new Employee("Jakub", "Zalewski", Position.MANAGER, 5, 7140));
+
+// sorting
+        table.setAutoCreateRowSorter(true);
+
+//        JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
-        tablePanel.add(scrollPane);
 
-//  menu panel buttons
+//  adding employee
         JButton addNewEmployeeButton = new JButton("Add New Employee");
-        ActionListener actionListener1 = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new AddingEmployeeFrame(myTabModel);
-            }
-        };
-        addNewEmployeeButton.addActionListener(actionListener1);
+        addNewEmployeeButton.addActionListener(e -> new AddEmpPane(myTabModel));
 
 //  editing employee
         JButton editEmployeeData = new JButton("Edit Employee Data");
-        editEmployeeData.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = table.getSelectedRow();
+        editEmployeeData.addActionListener(e -> {
+            int index = table.getSelectedRow();
+            if (index == -1) {
+                JOptionPane.showMessageDialog(null, "No employee selected...");
+            } else {
                 index = table.convertRowIndexToModel(index);
-                new EditEmployeeFrame(myTabModel, index);
+                new EditEmpData(myTabModel, index);
+                myTabModel.fireTableDataChanged();
             }
         });
 
 //  deleting employee
         JButton deleteEmployeeButton = new JButton("Delete Employee");
-        ActionListener actionListener2 = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                myTabModel.getEmployees().remove(table.getSelectedRow());
-                myTabModel.fireTableDataChanged();
-            }
-        };
-        deleteEmployeeButton.addActionListener(actionListener2);
+        deleteEmployeeButton.addActionListener(e -> {
+            myTabModel.getEmployees().remove(table.getSelectedRow());
+            myTabModel.fireTableDataChanged();
+        });
 
-// sorting
-        table.setAutoCreateRowSorter(true);
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        tablePanel.add(addNewEmployeeButton, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        tablePanel.add(editEmployeeData, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        tablePanel.add(deleteEmployeeButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+
+        JScrollPane jsp = new JScrollPane(table);
+        tablePanel.add(jsp, gbc);
 
 //  exporting/ importing
-        JButton exportButton = new JButton("EXPORT");
-
         JMenuBar menuBar;
         JMenu menu;
 
@@ -105,9 +113,6 @@ public class Main {
         mainFrame.setJMenuBar(menuBar);
 
         menu = new JMenu("File");
-        menu.setMnemonic(KeyEvent.VK_N);
-        menu.getAccessibleContext().setAccessibleDescription(
-                "This menu does nothing");
         menuBar.add(menu);
 
         JMenuItem menuItem1 = new JMenuItem("Save to file");
@@ -116,103 +121,124 @@ public class Main {
         JMenuItem menuItem2 = new JMenuItem("Import");
         menu.add(menuItem2);
 
-        menuItem1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fc = new JFileChooser();
+        // exporting data
+        menuItem1.addActionListener(e -> {
+                    JFileChooser fc = new JFileChooser();
 
-                JFrame parentFrame = new JFrame();
-                fc.setDialogTitle("Specify file to save");
-                int userSelection = fc.showSaveDialog(parentFrame);
+                    JFrame parentFrame = new JFrame();
+                    fc.setDialogTitle("Specify file to save");
+                    int userSelection = fc.showSaveDialog(parentFrame);
 
-
-                if (userSelection == JFileChooser.APPROVE_OPTION) {
-                    try {
-                        File fileToCreate = new File( fc.getCurrentDirectory()+"/"+fc.getSelectedFile().getName()+".txt");
-                        var gfh = fileToCreate.createNewFile();
-
-                        FileWriter fw = new FileWriter(fileToCreate);
-                        for (Employee emp: myTabModel.getEmployees()){
-                            fw.write(emp.toString()+"\n");
-                        }
-                        fw.close();
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
+                    if (userSelection == JFileChooser.APPROVE_OPTION) {
+                        myTabModel.serializeData(fc);
                     }
                 }
-            }
-        }
         );
 
-        menuItem2.addActionListener(new
-
-    ActionListener() {
-        @Override
-        public void actionPerformed (ActionEvent e){
-            File file;
-            Scanner scanner;
+        // importing data
+        menuItem2.addActionListener(e -> {
+            File selectedFile;
             int response;
-            JFileChooser fc = new JFileChooser(".");
 
+            JFileChooser fc = new JFileChooser(".");
             fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             response = fc.showOpenDialog(null);
-        }
-    });
-//                if(response == JFileChooser.APPROVE_OPTION) {
-//                    file = jFileChooser.getSelectedFile();
-//                    if (file.isFile()) {
-//                        try {
-//                            scanner = new Scanner(file);
-//                            while(scanner.hasNextLine()){
-//                                Pattern pattern = Pattern.compile("");
-//
-//                                }
-//                            }
-//
-//                        } catch (FileNotFoundException fileNotFoundException) {
-//                            fileNotFoundException.printStackTrace();
-//                        }
-//
-//                    }
-//                }
-//            }
-//        });
+
+            if (response == JFileChooser.APPROVE_OPTION) {
+                selectedFile = fc.getSelectedFile();
+                myTabModel.deserializeData(selectedFile, fc);
+            }
+        });
+
+        // searching based on category
+        JTextField searchInput = new JTextField("Insert searched phase");
+        JButton searchButton = new JButton("SEARCH");
+        JComboBox categoryToChose = new JComboBox(myTabModel.getColumnNames());
+
+        gbc.insets = new Insets(1, 1, 1, 1);
+
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+
+        tablePanel.add(searchInput, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        tablePanel.add(categoryToChose, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        tablePanel.add(searchButton, gbc);
 
 
-    //  layout
-    Container container = mainFrame.getContentPane();
-        container.setLayout(new
+        searchButton.addActionListener(e -> {
+            ArrayList<Employee> searchResultEmployees = new ArrayList<>();
+            var searchedValue = searchInput.getText();
+            var chosenCategory = (String) categoryToChose.getSelectedItem();
 
-    BoxLayout(container, Y_AXIS));
+            myTabModel.searchByCategory(searchResultEmployees, chosenCategory, searchedValue);
+            myTabModel.replaceTabDataForSearchResult(searchResultEmployees);
+        });
 
-        container.add(addNewEmployeeButton);
-        container.add(editEmployeeData);
-        container.add(deleteEmployeeButton);
+        JButton refreshButton = new JButton("REFRESH");
+        refreshButton.addActionListener(e -> myTabModel.refreshData());
 
+// find salary higher/lower than the value
+        JTextField insertEdgeSalVal = new JTextField("Insert salary value");
+
+        JButton showHigherSalThanVal = new JButton("Higher records");
+        JButton showLowerSalThanVal = new JButton("Lower records");
+
+        // showing records with higher value
+        showHigherSalThanVal.addActionListener(e -> {
+            var userInputVal = Double.valueOf(insertEdgeSalVal.getText());
+            ArrayList<Employee> searchResultEmployees = new ArrayList<>();
+
+            for (Employee emp : myTabModel.getEmployees()) {
+                if (emp.getSalary() > userInputVal)
+                    searchResultEmployees.add(emp);
+            }
+            myTabModel.replaceTabDataForSearchResult(searchResultEmployees);
+        });
+
+        // showing records with lower value
+        showLowerSalThanVal.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                var userInputVal = Double.valueOf(insertEdgeSalVal.getText());
+                ArrayList<Employee> searchResultEmployees = new ArrayList<>();
+
+                for (Employee emp : myTabModel.getEmployees()) {
+                    if (emp.getSalary() < userInputVal)
+                        searchResultEmployees.add(emp);
+                }
+                myTabModel.replaceTabDataForSearchResult(searchResultEmployees);
+            }
+        });
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        tablePanel.add(insertEdgeSalVal, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        tablePanel.add(showLowerSalThanVal, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        tablePanel.add(showHigherSalThanVal, gbc);
+
+        gbc.insets = new Insets(20, 5, 5, 5);
+        gbc.gridwidth = 1;
+        gbc.gridx = 2;
+        gbc.gridy = 4;
+        tablePanel.add(refreshButton, gbc);
+
+
+    }
 }
-}
-
-
-//                try {
-//        FileWriter fw = new FileWriter(fileLocation);
-//        for (Employee emp : myTabModel.getEmployees()) {
-//            fw.write(emp.toString() + "\n");
-//        }
-//        fw.close();
-//    } catch (IOException exc) {
-//        System.out.println("An error occurred.");
-//        exc.printStackTrace();
-//    }
-
-//                        try {
-//                            FileWriter fw = new FileWriter(file);
-//                            for (Employee emp : myTabModel.getEmployees()) {
-//                                fw.write(emp.toString() + "\n");
-//                            }
-//                            fw.close();
-//                        } catch (IOException exc) {
-//                            System.out.println("An error occurred.");
-//                        }
-
-
 

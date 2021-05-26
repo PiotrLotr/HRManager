@@ -2,15 +2,14 @@ public class Employee {
 
     private String name;
     private String surname;
-    private Enum Position;
-    private int timeOfService;
+    private Position position;
+    private double timeOfService;
     private double salary;
 
-
-    public Employee(String name, String surname, Enum position, int timeOfService, double salary) {
+    public Employee(String name, String surname, Position position, double timeOfService, double salary) {
         this.name = name;
         this.surname = surname;
-        Position = position;
+        this.position = position;
         this.timeOfService = timeOfService;
         this.salary = salary;
     }
@@ -31,19 +30,19 @@ public class Employee {
         this.surname = surname;
     }
 
-    public Enum getPosition() {
-        return Position;
+    public Position getPosition() {
+        return position;
     }
 
-    public void setPosition(Enum position) {
-        Position = position;
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
-    public int getTimeOfService() {
+    public double getTimeOfService() {
         return timeOfService;
     }
 
-    public void setTimeOfService(int timeOfService) {
+    public void setTimeOfService(double timeOfService) {
         this.timeOfService = timeOfService;
     }
 
@@ -60,7 +59,7 @@ public class Employee {
         return "Employee{" +
                 "name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", Position=" + Position +
+
                 ", timeOfService=" + timeOfService +
                 ", salary=" + salary +
                 '}';

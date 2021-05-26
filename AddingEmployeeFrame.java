@@ -1,60 +1,66 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class AddingEmployeeFrame extends JFrame {
+class AddEmpPane extends JOptionPane {
 
-    public AddingEmployeeFrame(MyTabModel table) throws HeadlessException {
-        Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setTitle("Adding new employee...");
-        this.setSize(screenDim.width / 3, screenDim.height / 3);
-        this.setLocation(screenDim.width / 3, screenDim.height / 5);
-        this.setVisible(true);
+    public AddEmpPane(MyTabModel table) throws HeadlessException {
 
-        JPanel jPanel = new JPanel();
-        this.add(jPanel);
-        jPanel.setLayout(new BoxLayout(jPanel, BoxLayout.PAGE_AXIS));
+        JPanel addEmpFrame = new JPanel();
+        addEmpFrame.setLayout(new BoxLayout(addEmpFrame, BoxLayout.PAGE_AXIS));
 
         JTextField insertName = new JTextField("Name");
         JTextField insertSurname = new JTextField("Surname");
-        JTextField insertPosition = new JTextField("Position");
+        JComboBox<Position> insertPosition = new JComboBox(Position.values());
         JTextField insertYearsOfExperience = new JTextField("Years of experience");
         JTextField insertSalary = new JTextField("Salary");
-        jPanel.add(insertName);
-        jPanel.add(insertSurname);
 
-        jPanel.add(insertPosition);
-        jPanel.add(insertYearsOfExperience);
-        jPanel.add(insertSalary);
+        addEmpFrame.add(insertName);
+        addEmpFrame.add(insertSurname);
+        addEmpFrame.add(insertPosition);
+        addEmpFrame.add(insertYearsOfExperience);
+        addEmpFrame.add(insertSalary);
 
-//        ComboBox<Position> comboBox = new ComboBox<>();
-//        comboBox.setItems
+        JOptionPane optionPane = new JOptionPane(addEmpFrame);
+        int respond =  JOptionPane.showConfirmDialog(null, addEmpFrame, "Please enter new employee data", JOptionPane.OK_CANCEL_OPTION);
 
-        ActionListener actionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    table.getEmployees().add(new Employee(
-                            insertName.getText(),
-                            insertSurname.getText(),
-                            (Position.valueOf(insertPosition.getText())),
-                            Integer.parseInt(insertYearsOfExperience.getText()),
-                            Integer.parseInt(insertSalary.getText())));
-                    table.fireTableStructureChanged();
-                } catch (WrongDataTypeException err) {
-                    System.out.println("Wrong data type. Please try again...");
-                }
-                JOptionPane.showMessageDialog(null, "New employer added");
-            }
-        };
+        var chosenPos = insertPosition.getSelectedItem().toString();
 
-        JButton acceptButton = new JButton("Accept");
-        acceptButton.addActionListener(actionListener);
-
-        jPanel.add(acceptButton);
-
+        if (respond == JOptionPane.OK_OPTION) {
+            addEmp(table, insertName, insertSurname, chosenPos, insertYearsOfExperience, insertSalary);
+        }
     }
 
+    public void addEmp(
+            MyTabModel table,
+            JTextField insertName,
+            JTextField insertSurname,
+            String insertPosition,
+            JTextField insertYearsOfExperience,
+            JTextField insertSalary
+    ) {
+        try {
+
+        var position = Position.valueOf(insertPosition);
+        var salary = Double.parseDouble(insertSalary.getText());
+
+            if (salary < position.getLowerEdge() || salary > position.getUpperEdge()) {
+                JOptionPane.showMessageDialog(null, "Salary not in the position range...");
+            } else {
+                table.getEmployees().add(
+                        new Employee(
+                                insertName.getText(),
+                                insertSurname.getText(),
+                                position,
+                                Double.parseDouble(insertYearsOfExperience.getText()),
+                                salary)
+                );
+                table.fireTableStructureChanged();
+                JOptionPane.showMessageDialog(null, "New employer added");
+
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Wrong data format. Try again...");
+        }
+    }
 
 }
